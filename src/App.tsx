@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import gql from 'graphql-tag'
+import './App.sass'
+import { useGraphQLQuery } from './hooks'
 
-function App() {
+const GET_COUNTRIES = gql`
+  query {
+    countries {
+      code
+      name
+    }
+  }
+`
+
+// const GET_COUNTRY = gql`
+//   query ($code: ID!) {
+//     country(code: $code) {
+//       name
+//     }
+//   }
+// `
+
+const App = () => {
+  // Fetch data
+  const { data, isLoading, error } = useGraphQLQuery({
+    key: 'countries',
+    query: GET_COUNTRIES,
+  })
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="home page">
+        <div className="container">
+          {error && <div className="error">{`ERROR: ${error}`}</div>}
+          {isLoading && <h1>Loading...</h1>}
+          {!isLoading && data && (
+            <ul>
+              {data.countries.map((c: any) => (
+                <li key={c.code}>
+                  {c.code} - {c.name}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
